@@ -8,7 +8,7 @@ int calculateFitness(const vector<int>& board) {
 	for (int i=0 ; i<n; i++){
 		// compersions after queen one
 		for (int j= i+1; j<n; j++) {
-			if() {
+			if(abs(board[i] - board[j]) != abs(i-j) && board[i] != board[j]) {
 				fitness++;
 			}
 		}
