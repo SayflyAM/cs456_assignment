@@ -1,91 +1,171 @@
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <cstdlib>
+#include <ctime>
 
+using namespace std;
 
-int calculateFitness(const vector<int>& board) {
+int calculateFitness(const vector<int> &board)
+{
 	int fitness = 0;
-	int n= board.size();
+	int n = board.size();
 
-    // this for outer loop for queen compersions
-	for (int i=0 ; i<n; i++){
+	// this for outer loop for queen compersions
+	for (int i = 0; i < n; i++)
+	{
 		// compersions after queen one
-		for (int j= i+1; j<n; j++) {
-			if(abs(board[i] - board[j]) != abs(i-j) && board[i] != board[j]) {
+		for (int j = i + 1; j < n; j++)
+		{
+			if (abs(board[i] - board[j]) != abs(i - j) && board[i] != board[j])
+			{
 				fitness++;
 			}
 		}
 	}
-    return fitness;
-
-
+	return fitness;
 }
 
-int selection(const vector<vector<int>>& poplution) {
-	int total_fitness =0;
-    int n = poplution.size();
-	for (int i=0;i<n;i++){
-		
+int selection(const vector<vector<int>> &poplution)
+{
+	int total_fitness = 0;
+	int n = poplution.size();
+	for (int i = 0; i < n; i++)
+	{
+
 		total_fitness += calculateFitness(poplution[i]);
-
 	}
-    
-	int random_num = rand() % total_fitness;
-	int running_sum =0;
 
-	for (int i = 0; i<n ;i++) {
+	int random_num = rand() % total_fitness;
+	int running_sum = 0;
+
+	for (int i = 0; i < n; i++)
+	{
 		running_sum += calculateFitness(poplution[i]);
 
-		if (running_sum >= random_num){
+		if (running_sum >= random_num)
+		{
 			return i;
 		}
-
 	}
-    return 0;
-
+	return 0;
 }
 
-
-
-
-vector<int> crossover(const vector<int>& parent1, const vector<int>& parent2) 
+vector<int> crossover(const vector<int> &parent1, const vector<int> &parent2)
 {
-	int n =  parent1.size();
+	int n = parent1.size();
 
 	vector<int> child(n);
-     
-	int c =  rand() % n;
 
-	for (int i=0; i < n; i++) {
-	
-		if(i < c){
+	int c = rand() % n;
+
+	for (int i = 0; i < n; i++)
+	{
+
+		if (i < c)
+		{
 			child[i] = parent1[i];
-		}else{
+		}
+		else
+		{
 
 			child[i] = parent2[i];
 		}
-		}
+	}
 	return child;
-
-
-
 }
 
-
-
-void mutate(vector<int>& child) {
-	int n =  child.size();
+void mutate(vector<int> &child)
+{
+	int n = child.size();
 
 	int column = rand() % n;
-	int row =  rand() % n;
+	int row = rand() % n;
 
 	child[column] = row;
 }
 
-
-vector<int> intial_pop(){
-     vector<int> pop(8);
-	for(int i=0 ; i < 8 ; i++ ){
-		pop[i] = rand() % 8 ;
+vector<int> intial_pop()
+{
+	vector<int> pop(8);
+	for (int i = 0; i < 8; i++)
+	{
+		pop[i] = rand() % 8;
 	}
 
 	return pop;
+}
 
+vector<int> genticAlgorithm()
+{
+	int pop_size = 100;
+	vector<vector<int>> population;
+
+	for (int i = 0; i < pop_size; i++)
+	{
+		population.push_back(intial_pop());
+	}
+
+	while (true)
+	{
+
+		for (int i = 0; i < pop_size; i++)
+		{
+			if (calculateFitness(population[i]) == 28)
+			{
+				return population[i];
+			}
+		}
+
+		vector<vector<int>> new_population;
+
+		for (int i = 0; i < pop_size; i++)
+		{
+			int parent1_idx = selection(population);
+			int parent2_idx = selection(population);
+
+			vector<int> child;
+			child = crossover(population[parent1_idx], population[parent2_idx]);
+
+			mutate(child);
+			new_population.push_back(child);
+		}
+
+		population = new_population;
+	}
+}
+
+void printBoard(const vector<int> &board)
+{
+
+	int n = board.size();
+
+	for (int r = 0; r < n; r++)
+	{
+
+		for (int c = 0; c < n; c++)
+		{
+			if (board[c] == r)
+			{
+				cout << "Q ";
+			}
+			else
+			{
+				cout << ". "
+			}
+		}
+		cout << endl;
+	}
+	cout << "-----------------" << endl;
+}
+
+int main()
+{
+	srand(time(0));
+
+	vector<int> solution = genticAlgorithm();
+
+	printBoard(solution);
+
+	return 0;
 }
