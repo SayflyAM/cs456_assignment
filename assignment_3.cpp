@@ -3,6 +3,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
+#include <fstream>
 
 using namespace std;
 
@@ -95,27 +96,55 @@ vector<int> intial_pop()
 
 	return pop;
 }
+int tournamentSelection(const vector<vector<int>> &population, int k)
+{
+	int n = population.size();
 
-vector<int> genticAlgorithm()
+	int best_idx = rand() % n;
+
+	for (int i = 0; i < k - 1; i++)
+	{
+		int ind_idx = rand() % n;
+		if (calculateFitness(population[ind_idx]) > calculateFitness(population[best_idx]))
+		{
+			best_idx = ind_idx;
+		}
+	}
+	return best_idx;
+}
+
+vector<int> genticAlgorithm(int run_number, ofstream &outFile)
 {
 	int pop_size = 100;
+
 	vector<vector<int>> population;
 
 	for (int i = 0; i < pop_size; i++)
 	{
 		population.push_back(intial_pop());
 	}
+	int generation = 0;
 
 	while (true)
 	{
+		generation++;
+		int best_fitness = 0;
 
 		for (int i = 0; i < pop_size; i++)
 		{
-			if (calculateFitness(population[i]) == 28)
+			int current_fitness = calculateFitness(population[i]);
+			if (current_fitness == 28)
 			{
+				cout << "generation:" << generation << endl;
+				outFile << "Run " << run_number << " - Generation: " << generation << endl;
 				return population[i];
 			}
+			if (current_fitness > best_fitness)
+			{
+				best_fitness = current_fitness;
+			}
 		}
+		outFile << "Generation " << generation << " - Best Fitness: " << best_fitness << endl;
 
 		vector<vector<int>> new_population;
 
@@ -123,6 +152,8 @@ vector<int> genticAlgorithm()
 		{
 			int parent1_idx = selection(population);
 			int parent2_idx = selection(population);
+			// int parent1_idx = tournamentSelection(population, 5);
+			// int parent2_idx = tournamentSelection(population, 5);
 
 			vector<int> child;
 			child = crossover(population[parent1_idx], population[parent2_idx]);
@@ -151,7 +182,7 @@ void printBoard(const vector<int> &board)
 			}
 			else
 			{
-				cout << ". "
+				cout << ". ";
 			}
 		}
 		cout << endl;
@@ -162,10 +193,16 @@ void printBoard(const vector<int> &board)
 int main()
 {
 	srand(time(0));
+	ofstream outFile("results.txt");
 
-	vector<int> solution = genticAlgorithm();
+	for (int i = 0; i < 5; i++)
+	{
 
-	printBoard(solution);
+		vector<int> solution = genticAlgorithm(i, outFile);
+		printBoard(solution);
+	}
+
+	outFile.close();
 
 	return 0;
 }
