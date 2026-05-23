@@ -113,7 +113,7 @@ int tournamentSelection(const vector<vector<int>> &population, int k)
 	return best_idx;
 }
 
-vector<int> genticAlgorithm(int run_number, ofstream &outFile)
+vector<int> genticAlgorithm(int run_number, ofstream &outFile, string selectionMethod)
 {
 	int pop_size = 100;
 
@@ -150,10 +150,25 @@ vector<int> genticAlgorithm(int run_number, ofstream &outFile)
 
 		for (int i = 0; i < pop_size; i++)
 		{
-			int parent1_idx = selection(population);
-			int parent2_idx = selection(population);
+			// int parent1_idx = selection(population);
+			// int parent2_idx = selection(population);
 			// int parent1_idx = tournamentSelection(population, 5);
 			// int parent2_idx = tournamentSelection(population, 5);
+			int parent1_idx, parent2_idx;
+			if (selectionMethod == "Roulette")
+			{
+				parent1_idx = selection(population);
+				parent2_idx = selection(population);
+			}
+			else
+			{
+				parent1_idx = tournamentSelection(population, 5);
+				parent2_idx = tournamentSelection(population, 5);
+			}
+			while (parent1_idx == parent2_idx)
+			{
+				parent2_idx = (selectionMethod == "Roulette") ? selection(population) : tournamentSelection(population, 5);
+			}
 
 			vector<int> child;
 			child = crossover(population[parent1_idx], population[parent2_idx]);
@@ -198,7 +213,15 @@ int main()
 	for (int i = 0; i < 5; i++)
 	{
 
-		vector<int> solution = genticAlgorithm(i, outFile);
+		vector<int> solution = genticAlgorithm(i, outFile, "Tournament");
+		printBoard(solution);
+	}
+	outFile << "\n\n"
+			<< endl;
+	for (int i = 0; i < 5; i++)
+	{
+
+		vector<int> solution = genticAlgorithm(i, outFile, "Roulette");
 		printBoard(solution);
 	}
 

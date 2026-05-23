@@ -4,10 +4,10 @@ genrations = []
 fitness_values = []
 
 
-with open("results_1.txt", "r") as file:
+with open("results.txt", "r") as file:
 
     for line in file:
-        if "Run 0" in line :
+        if "Run 4" in line :
             break
         if "Best Fitness" in line:
             data =line.split()
@@ -22,5 +22,6 @@ plt.plot(genrations, fitness_values)
 plt.xlabel("Genration")
 plt.ylabel("Best Fitness")
 
-plt.title("we use tournamentSelection")
+plt.title("we use tournamentSelection Run 4")
+#plt.title("Roulette Wheel Run 4 ")
 plt.show()
